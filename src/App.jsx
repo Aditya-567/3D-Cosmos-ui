@@ -25,9 +25,17 @@ import EarthAndSatellite from './components/EarthAndSatellite';
 import EarthMoonSatellite from './components/EarthMoonSatellite';
 import EarthWithTower from './components/EarthWithTower';
 import Galaxy from './components/Galaxy';
+import Jupiter from './components/Jupiter';
 import LogoWithRotatingText from './components/LogoWithRotatingText';
+import Mars from './components/Mars';
+import Mercury from './components/Mercury';
+import Neptune from './components/Neptune';
+import Pluto from './components/Pluto';
+import Saturn from './components/Saturn';
 import SolarSystem from './components/SolarSystem';
 import SolarSystemWithFeatures from './components/SolarSystemWithFeatures';
+import Uranus from './components/Uranus';
+import Venus from './components/Venus';
 import Playground from './playground/Playground';
 
 // --- STYLES ---
@@ -580,6 +588,14 @@ const MainDashboard = () => {
     { id: 'tower', label: 'Earth Tower Link', path: '/tower', icon: Radio },
     { id: 'moon', label: 'Lunar Mechanics', path: '/moon', icon: Moon },
     { id: 'earth-moon-satellite', label: 'Earth Moon Satellite', path: '/earth-moon-satellite', icon: RotateCw },
+    { id: 'mercury', label: 'Mercury', path: '/mercury', icon: Moon },
+    { id: 'venus', label: 'Venus', path: '/venus', icon: Moon },
+    { id: 'mars', label: 'Mars', path: '/mars', icon: Moon },
+    { id: 'jupiter', label: 'Jupiter', path: '/jupiter', icon: Moon },
+    { id: 'saturn', label: 'Saturn', path: '/saturn', icon: Moon },
+    { id: 'uranus', label: 'Uranus', path: '/uranus', icon: Moon },
+    { id: 'neptune', label: 'Neptune', path: '/neptune', icon: Moon },
+    { id: 'pluto', label: 'Pluto', path: '/pluto', icon: Moon },
     { id: 'solar', label: 'Solar System', path: '/solar-system', icon: Sun },
     { id: 'solar-features', label: 'Grand Solar System', path: '/solar-features', icon: Sun },
   ];
@@ -595,7 +611,7 @@ const MainDashboard = () => {
           style={{ transform: 'translate(-50%, -50%)' }}
           theme="light"
         />
-        <div className="w-full h-[1000px] max-w-7xl grid grid-cols-1 lg:grid-cols-12 gap-16 ">
+        <div className="w-full h-[1850px] max-w-7xl grid grid-cols-1 lg:grid-cols-12 gap-16 ">
 
           {/* Left: Branding */}
           <div className="lg:col-span-7 flex flex-col mt-28">
@@ -639,6 +655,17 @@ const MainDashboard = () => {
                 PlayGround
               </button>
             </div>
+
+            <div className="mt-24 animate-[fadeInUp_0.8s_ease-out_0.7s_both]">
+
+              <Galaxy quality="medium" enableOptions={false} autoRotate={true} style={{ width: '100%', height: '400px',background: 'white', borderRadius: '20px', border: '4px solid black', boxShadow: '8px 8px 0px 0px rgba(251,146,60,1)' }} />
+            </div>
+
+            <div className="mt-12 h-[400px] w-full animate-[fadeInUp_0.8s_ease-out_0.7s_both]">
+
+              <Saturn style={{ width: '100%', height: '100%', borderRadius: '20px', border: '4px solid black', boxShadow: '8px 8px 0px 0px rgba(251,146,60,1)' }} />
+            </div>
+              
           </div>
 
           {/* Right: Model Selection List */}
@@ -726,6 +753,14 @@ export default function App() {
           <Route path="/tower" element={<ModelWrapper component={EarthWithTower} label="Earth Tower Link" />} />
           <Route path="/moon" element={<ModelWrapper component={EarthAndMoon} label="Lunar Mechanics" />} />
           <Route path="/earth-moon-satellite" element={<ModelWrapper component={EarthMoonSatellite} label="Earth Moon Satellite" />} />
+          <Route path="/mercury" element={<ModelWrapper component={Mercury} label="Mercury" />} />
+          <Route path="/venus" element={<ModelWrapper component={Venus} label="Venus" />} />
+          <Route path="/mars" element={<ModelWrapper component={Mars} label="Mars" />} />
+          <Route path="/jupiter" element={<ModelWrapper component={Jupiter} label="Jupiter" />} />
+          <Route path="/saturn" element={<ModelWrapper component={Saturn} label="Saturn" />} />
+          <Route path="/uranus" element={<ModelWrapper component={Uranus} label="Uranus" />} />
+          <Route path="/neptune" element={<ModelWrapper component={Neptune} label="Neptune" />} />
+          <Route path="/pluto" element={<ModelWrapper component={Pluto} label="Pluto" />} />
           <Route path="/solar-system" element={<ModelWrapper component={SolarSystem} label="Solar System" />} />
           <Route path="/solar-features" element={<ModelWrapper component={SolarSystemWithFeatures} label="Grand Solar System" />} />
           <Route path="/playground" element={<Playground />} />

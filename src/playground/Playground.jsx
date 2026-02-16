@@ -1,16 +1,14 @@
 import {
-  Box,
   ChevronDown,
-  ChevronRight,
   Copy,
-  FileText,
   Home,
   RefreshCcw,
-  Terminal,
   ZoomIn,
   ZoomOut
 } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import Split from "react-split";
+import LogoWithRotatingText from '../components/LogoWithRotatingText';
 
 import * as Babel from "@babel/standalone";
 import Editor from "@monaco-editor/react";
@@ -73,41 +71,49 @@ export default function App() {
 />;
 }`,
   DotGlobe: `import { DotGlobe } from "./components/DotGlobe";
+
 export default function App() {
   return <DotGlobe />;
 }`,
   DotGlobeWithDataLink: `import { DotGlobeWithDataLink } from "./components/DotGlobeWithDataLink";
+
 export default function App() {
   return <DotGlobeWithDataLink />;
 }`,
   EarthAndSatellite: `import { EarthAndSatellite } from "./components/EarthAndSatellite";
+
 export default function App() {
   return <EarthAndSatellite />;
 }`,
   EarthWithTower: `import { EarthWithTower } from "./components/EarthWithTower";
+
 export default function App() {
   return <EarthWithTower />;
 }`,
   EarthAndMoon: `import { EarthAndMoon } from "./components/EarthAndMoon";
+
 export default function App() {
   return <EarthAndMoon />;
 }`,
   EarthMoonSatellite: `import { EarthMoonSatellite } from "./components/EarthMoonSatellite";
+
 export default function App() {
   return <EarthMoonSatellite />;
 }`,
   SolarSystem: `import { SolarSystem } from "./components/SolarSystem";
+
 export default function App() {
   return <SolarSystem speed={1} />;
 }`,
   SolarSystemWithFeatures: `import { SolarSystemWithFeatures } from "./components/SolarSystemWithFeatures";
+
 export default function App() {
   return <SolarSystemWithFeatures />;
 }`
 };
 
 /* -------------------------------------------------------------------------- */
-/*  COMPONENT ATTRIBUTES REFERENCE                                           */
+/*  COMPONENT ATTRIBUTES REFERENCE                                            */
 /* -------------------------------------------------------------------------- */
 
 const COMPONENT_ATTRIBUTES = {
@@ -197,29 +203,27 @@ const COMPONENT_ATTRIBUTES = {
 /*  MONACO EDITOR                                                             */
 /* -------------------------------------------------------------------------- */
 
-const CodeEditor = ({ code, onChange, fontSize }) => {
-  return (
-    <Editor
-      height="100%"
-      language="javascript"
-      value={code}
-      theme="vs-dark"
-      onChange={(v) => onChange(v ?? "")}
-      options={{
-        fontSize,
-        minimap: { enabled: false },
-        wordWrap: "off",
-        scrollBeyondLastLine: false,
-        automaticLayout: true,
-        tabSize: 2,
-        insertSpaces: true,
-        smoothScrolling: true,
-        fontFamily:
-          '"Fira Code", Consolas, Monaco, "Courier New", monospace'
-      }}
-    />
-  );
-};
+const CodeEditor = ({ code, onChange, fontSize }) => (
+  <Editor
+    height="100%"
+    language="javascript"
+    value={code}
+    theme="vs-dark"
+    onChange={(v) => onChange(v ?? "")}
+    options={{
+      fontSize,
+      minimap: { enabled: false },
+      wordWrap: "off",
+      scrollBeyondLastLine: false,
+      automaticLayout: true,
+      tabSize: 2,
+      insertSpaces: true,
+      smoothScrolling: true,
+      fontFamily:
+        '"Fira Code", Consolas, Monaco, "Courier New", monospace'
+    }}
+  />
+);
 
 /* -------------------------------------------------------------------------- */
 /*  PREVIEW ERROR BOUNDARY                                                     */
@@ -238,7 +242,6 @@ class PreviewErrorBoundary extends React.Component {
   componentDidCatch() { }
 
   componentDidUpdate(prevProps) {
-    // reset error when new component is rendered
     if (prevProps.children !== this.props.children && this.state.error) {
       this.setState({ error: null });
     }
@@ -263,9 +266,11 @@ export default function Playground() {
   const [AppComponent, setAppComponent] = useState(null);
   const [error, setError] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [showAttributes, setShowAttributes] = useState(true);
+  const [showProps, setShowProps] = useState(false);
 
-  const navigate = (to) => console.log("Navigate to:", to);
+  const navigate = (to) => {
+    window.location.href = to;
+  };
 
   /* ----------------------------- live compile ------------------------------ */
 
@@ -298,6 +303,10 @@ export default function Playground() {
 
         tCode = tCode.replace(/#([0-9a-fA-F]{6})([0-9a-fA-F]{2})/g, "#$1");
 
+        tCode = tCode.replace(
+          /<style\s+jsx(?:\s*=\s*(?:{?\s*true\s*}?|"true"|'true'))?\s*>/gi,
+          "<style>"
+        );
 
         const compiled = Babel.transform(tCode, {
           presets: ["react"]
@@ -332,44 +341,84 @@ export default function Playground() {
     setSelectedComp(key);
     setCode(TEMPLATES[key]);
     setIsMenuOpen(false);
+    setShowProps(false);
   };
 
-  /* ------------------------------------------------------------------------ */
-
   return (
-    <div className="w-full h-screen bg-[#0d1117] flex flex-col font-sans text-slate-300">
+    <div className="w-full h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 flex flex-col font-sans text-white">
+
+      {/* split gutter styling */}
+      <style>{`
+        .split-container > .gutter {
+          background-color: transparent;
+          position: relative;
+        }
+        .split-container > .gutter::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(
+            to bottom,
+            transparent,
+            rgba(249,115,22,0.5),
+            transparent
+          );
+          width: 2px;
+          margin: auto;
+        }
+      `}</style>
+
       {/* HEADER */}
-      <div className="h-14 border-b border-slate-800 flex items-center justify-between px-4 bg-[#161b22]">
+      <div className="
+        h-14 border-b border-orange-500/30
+        flex items-center justify-between px-4
+        bg-[#000]
+        
+        relative z-[100]
+      ">
         <div className="flex items-center gap-3">
-          <Box className="text-purple-400" size={24} />
-          <h1 className="font-bold text-slate-100">
-            Component Playground
+          <LogoWithRotatingText
+            top="0.2%"
+            left="1%"
+            size={52} // Very large
+            style={{ transform: 'translate(-50%, -50%)' }}
+            theme="dark"
+          />
+
+          <LogoWithRotatingText
+            top="84%"
+            left="92%"
+            size={100} // Very large
+            style={{ transform: 'translate(-50%, -50%)' }}
+            theme="dark"
+          />
+          <h1 className="pl-14 font-bold text-white text-sm tracking-widest uppercase">
+            Cosmos Playground
           </h1>
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="relative">
+          <div className="relative z-[110]">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="flex items-center gap-2 px-3 py-1.5 bg-[#21262d] border border-slate-700 rounded text-sm text-white min-w-[200px] justify-between"
-              title="Select a different component"
+              className="flex items-center gap-2 px-4 py-2 bg-black text-white border border-orange-500/30 rounded-lg text-xs font-semibold min-w-[200px] justify-between hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-all duration-200"
             >
               <span>{selectedComp}</span>
-              <ChevronDown size={14} />
+              <ChevronDown size={14} strokeWidth={2.5} />
             </button>
 
             {isMenuOpen && (
               <>
                 <div
-                  className="fixed inset-0 z-40"
+                  className="fixed inset-0 z-[150]"
                   onClick={() => setIsMenuOpen(false)}
                 />
-                <div className="absolute top-full right-0 mt-1 w-64 max-h-[60vh] overflow-y-auto bg-[#21262d] border border-slate-700 rounded-lg shadow-xl z-50 py-1">
+                <div className="absolute top-full right-0 mt-2 w-64 max-h-[60vh] overflow-y-auto bg-black border border-orange-500/50 rounded-lg shadow-2xl z-[200] py-2">
                   {Object.keys(TEMPLATES).map((k) => (
                     <button
                       key={k}
                       onClick={() => changeTemplate(k)}
-                      className="w-full text-left px-4 py-2 text-sm text-slate-300 hover:bg-blue-600 hover:text-white"
+                      className="w-full text-left px-4 py-2.5 text-xs text-white font-medium hover:bg-orange-500 hover:text-black transition-colors duration-150"
                     >
                       {k}
                     </button>
@@ -380,218 +429,197 @@ export default function Playground() {
           </div>
 
           <button
-            onClick={() => setCode(TEMPLATES[selectedComp])}
-            className="p-2 hover:bg-slate-700 rounded"
-            title="Reset Code"
+            onClick={() => setShowProps(v => !v)}
+            className="
+              px-3 py-2 rounded-lg
+              border border-orange-500/30
+              text-orange-400 text-xs font-semibold
+              hover:bg-orange-500/20
+              transition
+            "
           >
-            <RefreshCcw size={16} />
+            {showProps ? "Hide properties" : "Show properties"}
+          </button>
+
+          <button
+            onClick={() => setCode(TEMPLATES[selectedComp])}
+            className="p-2 hover:bg-orange-500 hover:text-black rounded-lg transition-colors duration-200"
+          >
+            <RefreshCcw size={18} strokeWidth={2} />
           </button>
 
           <button
             onClick={() => navigator.clipboard.writeText(code)}
-            className="p-2 hover:bg-slate-700 rounded"
-            title="Copy Code"
+            className="p-2 hover:bg-orange-500 hover:text-black rounded-lg transition-colors duration-200"
           >
-            <Copy size={16} />
-          </button>
-
-          <button
-            onClick={() => setShowAttributes(!showAttributes)}
-            className="p-2 hover:bg-slate-700 rounded"
-            title="Toggle Attributes"
-          >
-            <FileText size={16} />
+            <Copy size={18} strokeWidth={2} />
           </button>
 
           <button
             onClick={() => navigate("/")}
-            className="flex items-center gap-2 px-3 py-1.5 bg-green-600 rounded text-white"
-            title="Navigate to home page"
+            className="flex items-center gap-2 px-4 py-2 bg-orange-500 rounded-lg text-black text-xs font-semibold hover:bg-white transition-all duration-200"
           >
-            <Home size={16} /> Home
+            <Home size={16} strokeWidth={2} /> Home
           </button>
         </div>
       </div>
 
       {/* CONTENT */}
       <div className="flex-1 flex overflow-hidden">
-        {/* LEFT - CODE EDITOR */}
-        <div className="flex-1 flex flex-col border-r border-slate-800">
-          <div className="h-10 border-b border-slate-800 flex items-center justify-between px-4">
-            <div className="flex items-center gap-2 text-xs text-slate-400">
-              <Terminal size={12} />
-              <span>playground.jsx</span>
-            </div>
+        <Split
+          className="split-container flex"
+          sizes={[50, 50]}
+          minSize={[280, 300]}
+          gutterSize={8}
+          direction="horizontal"
+          cursor="col-resize"
+        >
+          {/* LEFT - CODE EDITOR (no sub header, floating font control) */}
+          <div className="relative flex flex-col h-full border-r border-orange-500/20 bg-gradient-to-br from-gray-900 to-black">
 
-            <div className="flex items-center gap-2">
-              <div className="flex items-center bg-slate-800 rounded px-2 py-0.5">
+            {/* floating font size control */}
+            <div className="absolute top-3 right-3 z-20">
+              <div className="flex items-center bg-black/70 backdrop-blur rounded-lg px-2 py-1 border border-orange-500/30 shadow">
                 <button
                   onClick={() => setFontSize((v) => Math.max(10, v - 1))}
-                  title="Decrease font size"
+                  className="hover:text-orange-500 transition-colors"
                 >
-                  <ZoomOut size={12} />
+                  <ZoomOut size={14} strokeWidth={2} />
                 </button>
-                <span className="text-[10px] min-w-[2rem] text-center">
+                <span className="text-[11px] min-w-[2.5rem] text-center font-semibold">
                   {fontSize}px
                 </span>
                 <button
                   onClick={() => setFontSize((v) => Math.min(24, v + 1))}
-                  title="Increase font size"
+                  className="hover:text-orange-500 transition-colors"
                 >
-                  <ZoomIn size={12} />
+                  <ZoomIn size={14} strokeWidth={2} />
                 </button>
               </div>
             </div>
-          </div>
 
-          <div className="flex-1">
-            <CodeEditor
-              code={code}
-              onChange={setCode}
-              fontSize={fontSize}
-            />
-          </div>
-        </div>
-
-        {/* CENTER - PREVIEW */}
-        <div className="flex-1 flex flex-col relative border-r border-slate-800">
-          <div className="h-10 border-b border-slate-800 flex items-center justify-between px-4">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">
-              Live Preview
-            </span>
-          </div>
-
-          <div className="flex-1 relative bg-black/50 overflow-hidden">
-            {error ? (
-              <div className="absolute inset-0 flex items-center justify-center p-8 bg-black/80 z-50">
-                <div className="bg-red-900/20 border border-red-500/50 rounded p-6 max-w-lg">
-                  <h3 className="text-red-400 font-bold mb-2">
-                    Compile error
-                  </h3>
-                  <pre className="text-xs text-red-200 whitespace-pre-wrap">
-                    {error}
-                  </pre>
-                </div>
-              </div>
-            ) : AppComponent ? (
-              <PreviewErrorBoundary
-                fallback={(err) => (
-                  <div className="absolute inset-0 flex items-center justify-center p-8 bg-black/80 z-50">
-                    <div className="bg-red-900/20 border border-red-500/50 rounded p-6 max-w-lg">
-                      <h3 className="text-red-400 font-bold mb-2">
-                        Runtime error
-                      </h3>
-                      <pre className="text-xs text-red-200 whitespace-pre-wrap">
-                        {String(err?.message || err)}
-                      </pre>
-                    </div>
-                  </div>
-                )}
-              >
-                <div className="w-full h-full">
-                  <AppComponent />
-                </div>
-              </PreviewErrorBoundary>
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-slate-600">
-                Compiling...
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* RIGHT - ATTRIBUTES PANEL */}
-        {showAttributes && (
-          <div className="w-80 flex flex-col border-l border-slate-800 bg-[#0d1117]">
-            <div className="h-10 border-b border-slate-800 flex items-center justify-between px-4">
-              <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">
-                Component Attributes
-              </span>
-              <button
-                onClick={() => setShowAttributes(false)}
-                className="p-1 hover:bg-slate-700 rounded"
-                title="Close"
-              >
-                <ChevronRight size={14} />
-              </button>
+            <div className="flex-1">
+              <CodeEditor
+                code={code}
+                onChange={setCode}
+                fontSize={fontSize}
+              />
             </div>
+          </div>
 
-            <div className="flex-1 overflow-y-auto">
-              <div className="p-4 space-y-3">
-                <div className="mb-4">
-                  <h3 className="text-sm font-bold text-blue-400 mb-1">
-                    {selectedComp}
-                  </h3>
-                  <p className="text-xs text-slate-500">
-                    Editable Properties
-                  </p>
+          {/* CENTER - PREVIEW (no header) */}
+          <div className="flex flex-col relative h-full bg-black">
+            <div
+              className="flex-1 relative bg-black overflow-hidden
+              ring-1 ring-orange-500/20
+              shadow-[inset_0_0_80px_rgba(255,140,0,0.05)]"
+            >
+              {error ? (
+                <div className="absolute inset-0 flex items-center justify-center p-8 bg-black/95 z-50">
+                  <div className="bg-black border border-red-500 rounded-lg p-6 max-w-lg shadow-2xl">
+                    <h3 className="text-red-500 font-bold mb-3 text-sm">
+                      ⚠ Compile Error
+                    </h3>
+                    <pre className="text-xs text-white whitespace-pre-wrap font-mono">
+                      {error}
+                    </pre>
+                  </div>
                 </div>
-
-                {COMPONENT_ATTRIBUTES[selectedComp]?.length > 0 ? (
-                  <div className="space-y-3">
-                    {COMPONENT_ATTRIBUTES[selectedComp].map((attr, idx) => (
-                      <div
-                        key={idx}
-                        className="bg-slate-800/50 border border-slate-700 rounded-lg p-3 hover:border-slate-600 transition-colors"
-                      >
-                        <div className="flex items-start justify-between mb-2">
-                          <span className="text-xs font-mono font-bold text-green-400">
-                            {attr.name}
-                          </span>
-                          <span className="text-[10px] px-2 py-0.5 bg-slate-700 text-slate-300 rounded">
-                            {attr.type}
-                          </span>
-                        </div>
-                        <p className="text-xs text-slate-400 mb-2">
-                          {attr.description}
-                        </p>
-                        <div className="flex items-center gap-2">
-                          <span className="text-[10px] text-slate-500">
-                            Default:
-                          </span>
-                          <span className="text-xs font-mono text-slate-300 bg-slate-900/50 px-2 py-1 rounded">
-                            {attr.default}
-                          </span>
-                        </div>
+              ) : AppComponent ? (
+                <PreviewErrorBoundary
+                  fallback={(err) => (
+                    <div className="absolute inset-0 flex items-center justify-center p-8 bg-black/95 z-50">
+                      <div className="bg-black border border-red-500 rounded-lg p-6 max-w-lg shadow-2xl">
+                        <h3 className="text-red-500 font-bold mb-3 text-sm">
+                          ⚠ Runtime Error
+                        </h3>
+                        <pre className="text-xs text-white whitespace-pre-wrap font-mono">
+                          {String(err?.message || err)}
+                        </pre>
                       </div>
-                    ))}
+                    </div>
+                  )}
+                >
+                  <div className="w-full h-full">
+                    <AppComponent />
                   </div>
-                ) : (
-                  <p className="text-xs text-slate-500 italic">
-                    No additional parameters for this component.
-                  </p>
-                )}
-
-                <div className="mt-6 pt-4 border-t border-slate-700">
-                  <h4 className="text-xs font-bold text-slate-400 mb-3 uppercase">
-                    Common Positioning
-                  </h4>
-                  <div className="space-y-2 text-xs text-slate-500">
-                    <div>
-                      <span className="text-slate-400">top</span> - CSS top position
-                    </div>
-                    <div>
-                      <span className="text-slate-400">bottom</span> - CSS bottom position
-                    </div>
-                    <div>
-                      <span className="text-slate-400">left</span> - CSS left position
-                    </div>
-                    <div>
-                      <span className="text-slate-400">right</span> - CSS right position
-                    </div>
-                    <div>
-                      <span className="text-slate-400">className</span> - CSS classes
-                    </div>
-                    <div>
-                      <span className="text-slate-400">style</span> - Inline styles object
-                    </div>
+                </PreviewErrorBoundary>
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="w-10 h-10 border-4 border-orange-500 border-t-transparent rounded-full animate-spin" />
+                    <span className="text-sm font-semibold">
+                      Compiling…
+                    </span>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
-        )}
+        </Split>
       </div>
+
+      {/* RIGHT PROPS DRAWER */}
+      <div
+        className={`
+          fixed top-14 bottom-0 right-0
+          w-[380px]
+          z-[300]
+          transition-transform duration-300 ease-out
+          ${showProps ? "translate-x-0" : "translate-x-full"}
+        `}
+      >
+        <div
+          className="
+            h-full
+            bg-gradient-to-b from-black to-gray-950
+            border-l border-orange-500/30
+            shadow-2xl
+            flex flex-col
+          "
+        >
+          <div className="h-10 flex items-center justify-between px-4 border-b border-orange-500/20 bg-black/70">
+            <span className="text-[11px] font-bold text-orange-500 uppercase tracking-widest">
+              {selectedComp} – Properties
+            </span>
+
+            <button
+              onClick={() => setShowProps(false)}
+              className="text-xs text-gray-400 hover:text-orange-400 transition"
+            >
+              Close
+            </button>
+          </div>
+
+          <div className="flex-1 overflow-y-auto p-3 space-y-2">
+            {(COMPONENT_ATTRIBUTES[selectedComp] || []).map((p) => (
+              <div
+                key={p.name}
+                className="rounded-lg border border-orange-500/20 bg-white/5 p-3 hover:bg-white/10 transition"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-white">
+                    {p.name}
+                  </span>
+
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-400 font-bold">
+                    {p.type}
+                  </span>
+                </div>
+
+                <div className="text-[11px] text-gray-400 mt-1">
+                  {p.description}
+                </div>
+
+                <div className="text-[11px] mt-2 text-orange-400 font-mono">
+                  default: {p.default}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 }

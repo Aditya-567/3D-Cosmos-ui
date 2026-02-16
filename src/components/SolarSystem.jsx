@@ -146,7 +146,7 @@ const SolarSystem = ({
         scene.add(solarSystemGroup);
 
         // --- 1. BACKGROUND SPHERE (8k Stars Image) ---
-        const bgGeometry = new THREE.SphereGeometry(3000, 64, 64);
+        const bgGeometry = new THREE.SphereGeometry(2500, 64, 64);
         const bgTexture = textureLoader.load('8k_stars.png');
         const bgMaterial = new THREE.MeshBasicMaterial({
             map: bgTexture,

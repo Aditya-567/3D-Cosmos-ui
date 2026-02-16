@@ -1,8 +1,23 @@
 import { useEffect, useRef, useState } from 'react';
-import * as THREE from 'three';
+
+// Self-contained Three.js loader
+const loadThree = () => {
+    return new Promise((resolve, reject) => {
+        if (window.THREE) {
+            resolve();
+            return;
+        }
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+        script.async = true;
+        script.onload = () => resolve();
+        script.onerror = (e) => reject(e);
+        document.head.appendChild(script);
+    });
+};
 
 // Helper to generate a soft glow texture for stars
-const getTexture = () => {
+const getTexture = (THREE) => {
     const canvas = document.createElement('canvas');
     canvas.width = 32;
     canvas.height = 32;
@@ -19,7 +34,7 @@ const getTexture = () => {
 };
 
 // Helper to generate a CORE texture that fades after 70%
-const getCoreTexture = () => {
+const getCoreTexture = (THREE) => {
     const canvas = document.createElement('canvas');
     canvas.width = 64;
     canvas.height = 64;
@@ -64,59 +79,6 @@ const Toggle = ({ checked, onChange }) => (
     </div>
 );
 
-/**
- * Galaxy Component - Interactive 3D galaxy visualization
- * 
- * @component
- * @example
-<Galaxy
-    stars={100000}                    // Number of stars in galaxy (1000-200000)
-    radius={5.4}                      // Size of galaxy (1-20)
-    arms={4}                          // Number of spiral arms (2-10)
-    coreSize={1.6}                    // Size of galaxy core (0-5)
-    spinCurvature={1.8}               // Spiral rotation amount (-5 to 5)
-    randomness={0.36}                 // Random star distribution (0-2)
-    innerColor="#ffaa60"              // Color at galaxy center (any hex color)
-    outerColor="#1b3984"              // Color at galaxy edge (any hex color)
-    starSize={0.05}                   // Size of stars (0.01-0.5)
-    rotationSpeed={0.05}              // Galaxy rotation speed (0-0.5)
-    tilting={{ x: 1.1, y: 0 }}       // Initial camera position angle
-    enableOptions={true}              // Show/hide control panel
-    enableStarsBg={true}              // Show procedural background stars
-    movingStarsBg={true}              // Rotate background
-    top="0"                           // CSS positioning (if absolute)
-    bottom="0"                        // CSS positioning (if absolute)
-    left="0"                          // CSS positioning (if absolute)
-    right="0"                         // CSS positioning (if absolute)
-    className=""                      // Additional CSS classes
-    style={{}}                        // Inline styles
-/>
- * 
- * @param {Object} props - Component props
- * @param {number} [props.stars=100000] - Number of stars in galaxy (1000-200000)
- * @param {number} [props.radius=5.4] - Size of galaxy radius (1-20)
- * @param {number} [props.arms=4] - Number of spiral arms (2-10)
- * @param {number} [props.coreSize=1.6] - Size of galaxy core (0-5)
- * @param {number} [props.spinCurvature=1.8] - Spiral rotation amount (-5 to 5)
- * @param {number} [props.randomness=0.36] - Random star distribution (0-2)
- * @param {string} [props.innerColor='#ffaa60'] - Color at galaxy center (any hex color)
- * @param {string} [props.outerColor='#1b3984'] - Color at galaxy edge (any hex color)
- * @param {number} [props.starSize=0.05] - Size of individual stars (0.01-0.5)
- * @param {number} [props.rotationSpeed=0.05] - Galaxy rotation speed (0-0.5)
- * @param {Object} [props.tilting={x: 0.9, y: 0}] - Initial camera position angle
- * @param {number} [props.tilting.x] - Vertical rotation angle (radians)
- * @param {number} [props.tilting.y] - Horizontal rotation angle (radians)
- * @param {boolean} [props.enableOptions=true] - Show/hide settings button and control panel toggle
- * @param {boolean} [props.enableStarsBg=true] - Show procedural background stars
- * @param {boolean} [props.movingStarsBg=true] - Enable background rotation
- * @param {string} [props.top] - CSS top position (for absolute positioning)
- * @param {string} [props.bottom] - CSS bottom position (for absolute positioning)
- * @param {string} [props.left] - CSS left position (for absolute positioning)
- * @param {string} [props.right] - CSS right position (for absolute positioning)
- * @param {string} [props.className=''] - Additional CSS classes
- * @param {Object} [props.style={}] - Inline styles object
- * @returns {JSX.Element} Galaxy visualization component
- */
 const Galaxy = ({
     stars = 100000,
     radius = 5.4,
@@ -132,6 +94,7 @@ const Galaxy = ({
     enableOptions = true,
     enableStarsBg = true, // Default Points BG
     movingStarsBg = true, // Default Moving
+    enableImageBg = true, // New Prop for Image BG
     top,
     bottom,
     left,
@@ -140,6 +103,7 @@ const Galaxy = ({
     style = {}
 }) => {
     const mountRef = useRef(null);
+    const [isThreeLoaded, setIsThreeLoaded] = useState(false);
 
     // Initialize parameters state
     const [parameters, setParameters] = useState({
@@ -155,7 +119,8 @@ const Galaxy = ({
         rotationSpeed: rotationSpeed,
         coreSize: coreSize,
         bgEnabled: enableStarsBg,
-        bgMoving: movingStarsBg
+        bgMoving: movingStarsBg,
+        bgImageEnabled: enableImageBg // New state
     });
 
     const parametersRef = useRef(parameters);
@@ -171,12 +136,20 @@ const Galaxy = ({
     const pointsRef = useRef(null);
     const coreRef = useRef(null);
     const bgStarsRef = useRef(null); // Ref for background points
+    const bgSphereRef = useRef(null); // Ref for background sphere texture
     const rendererRef = useRef(null);
     const cameraRef = useRef(null);
     const geometryRef = useRef(null);
     const materialRef = useRef(null);
     const frameIdRef = useRef(null);
     const rotation = useRef({ ...tilting });
+
+    // Load Three.js
+    useEffect(() => {
+        loadThree().then(() => {
+            setIsThreeLoaded(true);
+        });
+    }, []);
 
     // Sync props to state
     useEffect(() => {
@@ -193,7 +166,8 @@ const Galaxy = ({
             rotationSpeed: rotationSpeed,
             coreSize: coreSize,
             bgEnabled: enableStarsBg,
-            bgMoving: movingStarsBg
+            bgMoving: movingStarsBg,
+            bgImageEnabled: enableImageBg
         }));
         if (tilting) {
             rotation.current = { ...tilting };
@@ -202,7 +176,7 @@ const Galaxy = ({
     }, [
         stars, radius, arms, coreSize, spinCurvature, randomness,
         innerColor, outerColor, starSize, rotationSpeed, tilting?.x, tilting?.y,
-        enableOptions, enableStarsBg, movingStarsBg
+        enableOptions, enableStarsBg, movingStarsBg, enableImageBg
     ]);
 
     // Mouse interaction
@@ -211,8 +185,9 @@ const Galaxy = ({
 
     useEffect(() => {
         // --- INIT ---
-        if (!mountRef.current) return;
+        if (!mountRef.current || !isThreeLoaded) return;
 
+        const THREE = window.THREE;
         const width = mountRef.current.offsetWidth || window.innerWidth;
         const height = mountRef.current.offsetHeight || window.innerHeight;
 
@@ -221,7 +196,8 @@ const Galaxy = ({
         scene.fog = new THREE.FogExp2('#050508', 0.04);
         sceneRef.current = scene;
 
-        const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 90);
+        // Increased far plane to 10000 to see background stars
+        const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 10000);
         camera.position.set(0, 4, 6);
         camera.lookAt(0, 0, 0);
         cameraRef.current = camera;
@@ -260,6 +236,10 @@ const Galaxy = ({
                 if (bgStarsRef.current) {
                     bgStarsRef.current.rotation.y -= 0.0005;
                 }
+                // Rotate texture sphere
+                if (bgSphereRef.current) {
+                    bgSphereRef.current.rotation.y -= 0.0002;
+                }
             }
 
             const r = 8;
@@ -286,29 +266,58 @@ const Galaxy = ({
                 mountRef.current.removeChild(renderer.domElement);
             }
             if (geometryRef.current) geometryRef.current.dispose();
-            if (materialRef.current) materialRef.current.dispose();
+            if (materialRef.current) {
+                if (materialRef.current.map) materialRef.current.map.dispose();
+                materialRef.current.dispose();
+            }
+
+            // Dispose background sphere
+            if (bgSphereRef.current) {
+                if (bgSphereRef.current.material.map) bgSphereRef.current.material.map.dispose();
+                bgSphereRef.current.geometry.dispose();
+                bgSphereRef.current.material.dispose();
+            }
             renderer.dispose();
         };
-    }, []);
+    }, [isThreeLoaded]);
 
     // --- GALAXY & BACKGROUND GENERATOR ---
     useEffect(() => {
-        if (!sceneRef.current) return;
+        if (!sceneRef.current || !isThreeLoaded) return;
+        const THREE = window.THREE;
 
         // --- 1. CLEANUP ---
         if (pointsRef.current) {
             sceneRef.current.remove(pointsRef.current);
             pointsRef.current.geometry.dispose();
+            if (pointsRef.current.material.map) pointsRef.current.material.map.dispose();
             pointsRef.current.material.dispose();
         }
         if (coreRef.current) {
             sceneRef.current.remove(coreRef.current);
+            // Dispose all children meshes/sprites in the core group
+            coreRef.current.children.forEach(child => {
+                if (child.geometry) child.geometry.dispose();
+                if (child.material) {
+                    if (child.material.map) child.material.map.dispose();
+                    child.material.dispose();
+                }
+            });
         }
         if (bgStarsRef.current) {
             sceneRef.current.remove(bgStarsRef.current);
             bgStarsRef.current.geometry.dispose();
+            if (bgStarsRef.current.material.map) bgStarsRef.current.material.map.dispose();
             bgStarsRef.current.material.dispose();
             bgStarsRef.current = null;
+        }
+        // Cleanup background sphere if disabled or re-created
+        if (bgSphereRef.current) {
+            sceneRef.current.remove(bgSphereRef.current);
+            bgSphereRef.current.geometry.dispose();
+            if (bgSphereRef.current.material.map) bgSphereRef.current.material.map.dispose();
+            bgSphereRef.current.material.dispose();
+            bgSphereRef.current = null;
         }
 
 
@@ -371,8 +380,8 @@ const Galaxy = ({
 
         geometryRef.current = geometry;
 
-        const particleTexture = getTexture();
-        const coreTexture = getCoreTexture();
+        const particleTexture = getTexture(THREE);
+        const coreTexture = getCoreTexture(THREE);
 
         const material = new THREE.PointsMaterial({
             size: parameters.size,
@@ -465,13 +474,31 @@ const Galaxy = ({
             });
 
             const bgPoints = new THREE.Points(bgGeometry, bgMaterial);
+            bgPoints.renderOrder = -1; // Ensure procedural stars are behind galaxy
             sceneRef.current.add(bgPoints);
             bgStarsRef.current = bgPoints;
         }
 
+        // --- 5. BACKGROUND SPHERE (Image Texture) ---
+        if (parameters.bgImageEnabled) {
+            const textureLoader = new THREE.TextureLoader();
+            const bgSphereGeometry = new THREE.SphereGeometry(4000, 64, 64);
+            const bgSphereTexture = textureLoader.load('8k_stars.png');
+            const bgSphereMaterial = new THREE.MeshBasicMaterial({
+                map: bgSphereTexture,
+                side: THREE.BackSide,
+                transparent: true,
+                opacity: 1, // Increased from 0.6 to 1 to fix dullness
+                depthWrite: false,
+                fog: false
+            });
+            const backgroundSphere = new THREE.Mesh(bgSphereGeometry, bgSphereMaterial);
+            backgroundSphere.renderOrder = -2; // Ensure background image is behind everything
+            sceneRef.current.add(backgroundSphere);
+            bgSphereRef.current = backgroundSphere;
+        }
 
-
-    }, [parameters]);
+    }, [parameters, isThreeLoaded]);
 
 
     // --- HANDLERS ---
@@ -565,7 +592,7 @@ const Galaxy = ({
           width: 100%;
           height: 4px;
           cursor: pointer;
-          background: rhitegba(255,255,255,0.2);
+          background: rgba(255,255,255,0.2);
           border-radius: 2px;
         }
       `}</style>
@@ -582,11 +609,17 @@ const Galaxy = ({
                 onTouchEnd={handleMouseUp}
             />
 
+            {!isThreeLoaded && (
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <p className="text-white/50 animate-pulse font-mono text-sm">Loading Physics Engine...</p>
+                </div>
+            )}
+
             {enableOptions && (
                 <>
                     <div className={`absolute top-[12%] right-6 h-[calc(100vh-11rem)] w-[350px] transition-all duration-500 ease-out ${showControls ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10 pointer-events-none'}`}>
 
-                        <div className="w-full h-full bg- backdrop-blur-xl border border-white/10 rounded-[32px] shadow-2xl flex flex-col overflow-hidden">
+                        <div className="w-full h-full bg-black/40 backdrop-blur-xl border border-white/10 rounded-[32px] shadow-2xl flex flex-col overflow-hidden">
 
 
                             <div className="flex-1 overflow-y-auto glassy-scrollbar p-4 space-y-3">
@@ -597,6 +630,14 @@ const Galaxy = ({
                                         <Toggle
                                             checked={parameters.bgEnabled}
                                             onChange={(val) => updateParam('bgEnabled', val)}
+                                        />
+                                    </div>
+
+                                    <div className="flex justify-between items-center mb-2">
+                                        <span className="text-xs text-white/70">Bg Image (Sphere)</span>
+                                        <Toggle
+                                            checked={parameters.bgImageEnabled}
+                                            onChange={(val) => updateParam('bgImageEnabled', val)}
                                         />
                                     </div>
 
