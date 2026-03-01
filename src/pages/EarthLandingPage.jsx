@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 
 export const EARTH_CODE_SNIPPET = `import { EarthAndMoon } from '3d-solar-system-globe';
 import { Github, Linkedin, Twitter } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const TiltCard = ({ item }) => {
     const cardRef = useRef(null);
@@ -60,6 +60,14 @@ const TiltCard = ({ item }) => {
 };
 
 const EarthLandingPage = () => {
+    const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 768);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     return (
         <div className="relative min-h-screen bg-[#000000] text-zinc-300 font-sans overflow-x-hidden">
 
@@ -68,6 +76,7 @@ const EarthLandingPage = () => {
                     earthSize={1}
                     containerHeight='100%'
                     top='24%'
+                    mouseInteractive={!isMobile}
                 />
             </div>
 
@@ -180,8 +189,13 @@ const TiltCard = ({ item }) => {
 
 const EarthLandingPage = () => {
     const [copied, setCopied] = useState(false);
+    const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
 
-    useEffect(() => { }, []);
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 768);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     const handleCopy = () => {
         navigator.clipboard.writeText(EARTH_CODE_SNIPPET).then(() => {
@@ -228,6 +242,7 @@ const EarthLandingPage = () => {
                     moonDistance={1.6}
                     moonOrbitSpeed={0.009}
                     moonSize={0.1}
+                    mouseInteractive={!isMobile}
                 />
             </div>
 
