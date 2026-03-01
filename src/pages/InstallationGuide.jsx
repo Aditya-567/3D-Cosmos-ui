@@ -6,8 +6,10 @@ import {
     ChevronRight,
     Code2,
     Copy,
+    ExternalLink,
     Globe,
     Layers,
+    Layout,
     Network,
     Package,
     Puzzle,
@@ -23,6 +25,9 @@ import {
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoWithRotatingText from '../components/LogoWithRotatingText';
+import { EARTH_CODE_SNIPPET } from './EarthLandingPage';
+import { GALAXY_CODE_SNIPPET } from './GalaxyLandingPage';
+import { SATURN_CODE_SNIPPET } from './SaturnLandingPage';
 
 // ─── animation styles ─────────────────────────────────────────────────────────
 const animationStyles = `
@@ -660,6 +665,50 @@ const ComponentCard = ({ icon: Icon, name, description, importName, path }) => {
 // ─── divider ──────────────────────────────────────────────────────────────────
 const Divider = () => <div className="h-px bg-gradient-to-r from-[#e5e5e5] via-orange-200 to-[#e5e5e5]" />;
 
+// ─── expandable code block ────────────────────────────────────────────────────
+const ExpandableCode = ({ fullCode, lang = 'jsx' }) => {
+    const [expanded, setExpanded] = useState(false);
+    const wrapperRef = useRef(null);
+
+    const toggle = () => {
+        if (expanded) {
+            // collapse first, then scroll wrapper to top of viewport
+            setExpanded(false);
+            requestAnimationFrame(() => {
+                wrapperRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            });
+        } else {
+            setExpanded(true);
+        }
+    };
+
+    return (
+        <div ref={wrapperRef} className="flex flex-col gap-2">
+            <div className="relative">
+                <div
+                    className="overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]"
+                    style={{ maxHeight: expanded ? '9999px' : '168px' }}
+                >
+                    <CodeBlock lang={lang} code={fullCode} />
+                </div>
+                {!expanded && (
+                    <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#0a0a0a] to-transparent pointer-events-none rounded-b-2xl" />
+                )}
+            </div>
+            <button
+                onClick={toggle}
+                className="self-start flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-black uppercase tracking-widest transition-all duration-200 bg-[#f0f0f0] hover:bg-orange-50 text-[#666] hover:text-orange-600 border border-[#e5e5e5] hover:border-orange-300"
+            >
+                {expanded ? (
+                    <><ChevronRight size={11} className="rotate-90" /> Hide</>
+                ) : (
+                    <><ChevronRight size={11} /> See full code</>
+                )}
+            </button>
+        </div>
+    );
+};
+
 // ─── main page ────────────────────────────────────────────────────────────────
 export default function InstallationGuide() {
     const navigate = useNavigate();
@@ -673,6 +722,7 @@ export default function InstallationGuide() {
         { id: 'css', label: 'CSS Import', icon: Code2 },
         { id: 'usage', label: 'Basic Usage', icon: Zap },
         { id: 'components', label: 'Components', icon: Puzzle },
+        { id: 'ui-examples', label: 'UI Examples', icon: Layout },
         { id: 'frameworks', label: 'Frameworks', icon: Layers },
         { id: 'troubleshoot', label: 'Troubleshooting', icon: AlertTriangle },
     ];
@@ -798,9 +848,10 @@ export default function InstallationGuide() {
                             <div className="flex flex-wrap gap-3">
                                 {[
                                     { label: 'Components', value: '17' },
-                                    { label: 'Versions', value: '9' },
-                                    { label: 'Unpacked', value: '57.5 MB' },
+                                    { label: 'Versions', value: '13' },
+                                    { label: 'Unpacked', value: '525 kB' },
                                     { label: 'React', value: '≥ 18' },
+                                    { label: 'UI Examples', value: ' 3' },
                                 ].map(({ label, value }, i) => (
                                     <div key={label} className="anim-scalein flex flex-col px-6 py-2 rounded-xl border border-[#e5e5e5] bg-[#f9f9f9] hover:border-orange-300 hover:bg-orange-50 transition-colors duration-200" style={{ animationDelay: `${420 + i * 70}ms` }}>
                                         <span className="text-lg sm:text-xl font-extrabold italic text-orange-500">{value}</span>
@@ -837,8 +888,8 @@ export default function InstallationGuide() {
                             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-5 rounded-xl border border-[#e5e5e5] bg-[#f5f5f5]">
                                 {[
                                     { k: 'Package', v: '3d-solar-system-globe' },
-                                    { k: 'Version', v: '0.0.9' },
-                                    { k: 'License', v: 'none' },
+                                    { k: 'Version', v: '0.0.13' },
+                                    { k: 'License', v: 'Apache-2.0' },
                                     { k: 'React', v: '^18.0.0' },
                                 ].map(({ k, v }) => (
                                     <div key={k}>
@@ -998,6 +1049,117 @@ function PlanetGrid() {
                                     </AnimateOnScroll>
                                 ))}
                             </div>
+                        </Section>
+
+                        <Divider />
+
+                        {/* ── 07.5 UI EXAMPLES ── */}
+                        <Section id="ui-examples" number="07.5" title="UI Examples" icon={Layout}>
+                            <p className="text-sm text-[#666] font-medium">Full landing-page demos built with the 3D components. Copy the code, paste it in your project, and customise from there.</p>
+
+                            <Alert type="info" title="Tip — positioning">
+                                Each demo uses <code className="bg-blue-900/30 px-1 rounded font-mono text-[11px]">position: absolute</code> on the 3D canvas and wraps all HTML content in a <code className="bg-blue-900/30 px-1 rounded font-mono text-[11px]">relative z-50</code> container to defeat the Three.js stacking-context issue.
+                            </Alert>
+
+                            {/* Galaxy landing page */}
+                            <AnimateOnScroll direction="up" delay={0}>
+                                <div className="rounded-2xl border border-[#e5e5e5] overflow-hidden">
+                                    <div className="px-5 py-4 border-b border-[#e5e5e5] bg-[#f9f9f9] flex flex-wrap items-center gap-3">
+                                        <div className="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center">
+                                            <Sparkles size={16} className="text-purple-500" />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <span className="font-black uppercase italic text-sm text-[#1a1a1a] block">Galaxy Landing Page</span>
+                                            <span className="text-[11px] text-[#999] font-mono">route: /landing1</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Badge color="blue">Galaxy</Badge>
+                                            <Badge color="orange">TiltCard</Badge>
+                                        </div>
+                                    </div>
+                                    <div className="p-5 flex flex-col gap-4">
+                                        <p className="text-xs text-[#666] font-medium leading-relaxed">
+                                            A portfolio-style hero page with a full-screen procedural galaxy backdrop, glassmorphism tilt cards, social icon buttons, and a floating copy-code control. The gradient overlay keeps text readable across all screen sizes.
+                                        </p>
+                                        <ExpandableCode lang="jsx" fullCode={GALAXY_CODE_SNIPPET} />
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={() => navigate('/landing1')}
+                                                className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-purple-500/10 border border-purple-300/40 text-purple-600 hover:bg-purple-500/20 font-black uppercase italic text-xs transition-all duration-200"
+                                            >
+                                                <ExternalLink size={12} /> Live Preview
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </AnimateOnScroll>
+
+                            {/* Saturn landing page */}
+                            <AnimateOnScroll direction="up" delay={80}>
+                                <div className="rounded-2xl border border-[#e5e5e5] overflow-hidden">
+                                    <div className="px-5 py-4 border-b border-[#e5e5e5] bg-[#f9f9f9] flex flex-wrap items-center gap-3">
+                                        <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center">
+                                            <Layers size={16} className="text-amber-500" />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <span className="font-black uppercase italic text-sm text-[#1a1a1a] block">Saturn Landing Page</span>
+                                            <span className="text-[11px] text-[#999] font-mono">route: /landing2</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Badge color="amber">Saturn</Badge>
+                                            <Badge color="orange">TiltCard</Badge>
+                                        </div>
+                                    </div>
+                                    <div className="p-5 flex flex-col gap-4">
+                                        <p className="text-xs text-[#666] font-medium leading-relaxed">
+                                            A split-layout hero page with Saturn's ring system filling the right half of the screen. A directional gradient fades the planet into the text content on the left. Includes social buttons, an arrow CTA, and glassmorphism tilt cards at the bottom.
+                                        </p>
+                                        <ExpandableCode lang="jsx" fullCode={SATURN_CODE_SNIPPET} />
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={() => navigate('/landing2')}
+                                                className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-amber-500/10 border border-amber-300/40 text-amber-600 hover:bg-amber-500/20 font-black uppercase italic text-xs transition-all duration-200"
+                                            >
+                                                <ExternalLink size={12} /> Live Preview
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </AnimateOnScroll>
+
+                            {/* Earth landing page */}
+                            <AnimateOnScroll direction="up" delay={160}>
+                                <div className="rounded-2xl border border-[#e5e5e5] overflow-hidden">
+                                    <div className="px-5 py-4 border-b border-[#e5e5e5] bg-[#f9f9f9] flex flex-wrap items-center gap-3">
+                                        <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                                            <Globe size={16} className="text-blue-500" />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <span className="font-black uppercase italic text-sm text-[#1a1a1a] block">Earth Landing Page</span>
+                                            <span className="text-[11px] text-[#999] font-mono">route: /landing3</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Badge color="blue">EarthAndMoon</Badge>
+                                            <Badge color="orange">TiltCard</Badge>
+                                        </div>
+                                    </div>
+                                    <div className="p-5 flex flex-col gap-4">
+                                        <p className="text-xs text-[#666] font-medium leading-relaxed">
+                                            A centred hero page with the Earth-Moon system occupying the upper viewport. A vertical gradient blends the globe into a dark content section below containing centred text, social icons, and four glassmorphism tilt cards. All HTML content sits in a <code className="bg-[#f0f0f0] px-1 rounded font-mono text-[10px] text-[#333]">z-50</code> stacking context above the WebGL canvas.
+                                        </p>
+                                        <ExpandableCode lang="jsx" fullCode={EARTH_CODE_SNIPPET} />
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={() => navigate('/landing3')}
+                                                className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-500/10 border border-blue-300/40 text-blue-600 hover:bg-blue-500/20 font-black uppercase italic text-xs transition-all duration-200"
+                                            >
+                                                <ExternalLink size={12} /> Live Preview
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </AnimateOnScroll>
+
                         </Section>
 
                         <Divider />

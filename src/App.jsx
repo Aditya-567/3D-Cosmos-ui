@@ -16,6 +16,17 @@ import { useRef, useState } from 'react';
 import { BrowserRouter, Route, Routes, useNavigate } from 'react-router-dom';
 
 // Import all 3D components
+import {
+  DotGlobe, DotGlobeWithDataLink,
+  Jupiter,
+  Mars,
+  Mercury,
+  Neptune,
+  Pluto,
+  Saturn,
+  SolarSystemWithFeatures, Uranus,
+  Venus
+} from '3d-solar-system-globe';
 import Contact from './components/contact';
 import EarthAndMoon from './components/EarthAndMoon';
 import EarthAndSatellite from './components/EarthAndSatellite';
@@ -23,10 +34,8 @@ import EarthMoonSatellite from './components/EarthMoonSatellite';
 import EarthWithTower from './components/EarthWithTower';
 import Galaxy from './components/Galaxy';
 import LogoWithRotatingText from './components/LogoWithRotatingText';
-import { Saturn , Pluto ,Mars , DotGlobe , DotGlobeWithDataLink , Mercury , Venus, Jupiter , Neptune
-, SolarSystemWithFeatures, Uranus
- } from '3d-solar-system-globe';
 import SolarSystem from './components/SolarSystem';
+import EarthLandingPage from './pages/EarthLandingPage';
 import GalaxyLandingPage from './pages/GalaxyLandingPage';
 import InstallationGuide from './pages/InstallationGuide';
 import SaturnLandingPage from './pages/SaturnLandingPage';
@@ -290,20 +299,19 @@ const MainDashboard = () => {
   };
 
   const models = [
-    { id: 'galaxy', label: 'Galaxy Generator', path: '/galaxy', icon: Sparkles },
     { id: 'data-link', label: 'Data Mesh Globe', path: '/data-link', icon: Network },
     { id: 'tower', label: 'Earth Tower Link', path: '/tower', icon: Radio },
-    { id: 'earth-moon-satellite', label: 'Earth Moon Satellite', path: '/earth-moon-satellite', icon: RotateCw },
+
     { id: 'mars', label: 'Mars', path: '/mars', icon: Globe },
     { id: 'jupiter', label: 'Jupiter', path: '/jupiter', icon: Globe },
-    { id: 'saturn', label: 'Saturn', path: '/saturn', icon: Globe },
-    { id: 'pluto', label: 'Pluto', path: '/pluto', icon: Globe },
+
     { id: 'solar', label: 'Solar System', path: '/solar-system', icon: Sun },
   ];
 
   const uiModels = [
     { id: 'galaxyL1', label: 'Galaxy Landing Page', path: '/landing1', icon: Sparkles },
     { id: 'saturnL2', label: 'Saturn Landing Page', path: '/landing2', icon: Globe },
+    { id: 'earthMoonL2', label: 'Earth Landing Page', path: '/landing3', icon: RotateCw },
   ];
 
 
@@ -506,6 +514,7 @@ export default function App() {
           <Route path="/installation-guide" element={<InstallationGuide />} />
           <Route path="/landing1" element={<GalaxyLandingPage />} />
           <Route path="/landing2" element={<SaturnLandingPage />} />
+          <Route path="/landing3" element={<EarthLandingPage />} />
         </Routes>
 
         {/* Global CSS */}

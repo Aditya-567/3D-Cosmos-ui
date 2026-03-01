@@ -1,8 +1,8 @@
 import { Saturn } from '3d-solar-system-globe';
-import { ArrowRight, Check, Copy, Github, Linkedin, Twitter } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, Copy, Github, Linkedin, Twitter } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
-const SATURN_CODE_SNIPPET = `import { Saturn } from '3d-solar-system-globe';
+export const SATURN_CODE_SNIPPET = `import { Saturn } from '3d-solar-system-globe';
 import { ArrowRight, Check, Copy, Github, Linkedin, Twitter } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
@@ -119,7 +119,7 @@ const SaturnLandingPage = () => {
             <div className="absolute min-h-screen w-[100%] right-0 top-0 z-10">
                 <div className='z-10'>
                     <Saturn
-                        left={isMobile ? '0%' : '40%'}
+                        left={isMobile ? '0%' : '38%'}
                         top={isMobile ? '-10%' : '-25%'}
                         autoRotate
                         autoRotateSpeed={0.5}
@@ -261,29 +261,38 @@ const SaturnLandingPage = () => {
     return (
         <div className="min-h-screen bg-[#000000] text-zinc-300 font-sans p-4 md:p-8 flex items-center justify-center relative overflow-hidden">
 
-            {/* Floating Copy Code Button */}
-            <button
-                onClick={handleCopy}
-                className={`fixed top-6 right-6 z-50 flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium tracking-wider uppercase transition-all duration-300
-                    bg-black/60 border backdrop-blur-xl shadow-[0_8px_32px_0_rgba(0,0,0,0.6)]
-                    ${copied
-                        ? 'border-emerald-400/60 text-emerald-400 shadow-[0_0_20px_rgba(52,211,153,0.3)]'
-                        : 'border-white/40 text-white hover:text-white hover:border-white/30 '
-                    }`}
-                style={{
-                    animationDuration: copied ? undefined : '2s',
-                }}
-            >
-                {copied ? (
-                    <><Check size={14} strokeWidth={2} /> Copied!</>
-                ) : (
-                    <><Copy size={14} strokeWidth={1.5} /> Copy Code</>
-                )}
-            </button>
+            {/* Floating Top-Right Buttons */}
+            <div className="fixed top-6 right-6 z-50 flex items-center gap-3">
+                {/* Back to Home Button */}
+                <a
+                    href="/"
+                    className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium tracking-wider uppercase transition-all duration-300
+                        bg-black/60 border border-white/40 text-white hover:text-white hover:border-white/30 backdrop-blur-xl shadow-[0_8px_32px_0_rgba(0,0,0,0.6)]"
+                >
+                    <ArrowLeft size={14} strokeWidth={1.5} /> Home
+                </a>
+
+                {/* Copy Code Button */}
+                <button
+                    onClick={handleCopy}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium tracking-wider uppercase transition-all duration-300
+                        bg-black/60 border backdrop-blur-xl shadow-[0_8px_32px_0_rgba(0,0,0,0.6)]
+                        ${copied
+                            ? 'border-emerald-400/60 text-emerald-400 shadow-[0_0_20px_rgba(52,211,153,0.3)]'
+                            : 'border-white/40 text-white hover:text-white hover:border-white/30'
+                        }`}
+                >
+                    {copied ? (
+                        <><Check size={14} strokeWidth={2} /> Copied!</>
+                    ) : (
+                        <><Copy size={14} strokeWidth={1.5} /> Copy Code</>
+                    )}
+                </button>
+            </div>
 
             {/* Ambient background glows to refract through the dark glass */}
             <div className="z-40 absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-[#333]/40 blur-[150px] rounded-full pointer-events-none"></div>
-           
+
             {/* Right Side: Local Saturn Placeholder */}
             <div
                 className='absolute z-30 top-0 left-0 w-full h-[150vh]'
@@ -296,7 +305,7 @@ const SaturnLandingPage = () => {
             <div className="absolute min-h-screen w-[100%] right-0 top-0 z-10">
                 <div className='z-10'>
                     <Saturn
-                        left={isMobile ? '0%' : '40%'}
+                        left={isMobile ? '0%' : '38%'}
                         top={isMobile ? '-10%' : '-25%'}
                         autoRotate
                         autoRotateSpeed={0.5}
