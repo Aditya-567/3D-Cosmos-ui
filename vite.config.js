@@ -10,5 +10,7 @@ export default defineConfig({
       '3d-solar-system-globe': resolve(__dirname, 'node_modules/3d-solar-system-globe/dist/index.js')
     }
   },
-
+  build: {
+    chunkSizeWarningLimit: 8000,
+  },
 })
