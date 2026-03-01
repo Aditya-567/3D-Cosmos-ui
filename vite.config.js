@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '3d-solar-system-globe': resolve(__dirname, 'node_modules/3d-solar-system-globe/dist/index.js')
+      'cosmo-ui': resolve(__dirname, 'node_modules/3d-solar-system-globe/dist/index.js')
     }
   },
   build: {
