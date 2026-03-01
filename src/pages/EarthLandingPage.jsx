@@ -225,6 +225,9 @@ const EarthLandingPage = () => {
                     earthSize={1}
                     containerHeight='100%'
                     top='24%'
+                    moonDistance={1.6}
+                    moonOrbitSpeed={0.009}
+                    moonSize={0.1}
                 />
             </div>
 
@@ -248,7 +251,7 @@ const EarthLandingPage = () => {
                     {/* Action Buttons Row */}
                     <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6">
                         {/* Main Pill Button */}
-                        <button className="h-14 md:h-16 w-48 md:w-72 bg-black/40 border border-white/[0.08] border-t-white/[0.2] border-l-white/[0.2] backdrop-blur-xl rounded-full hover:bg-white/[0.05] shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] transition-all duration-300"></button>
+                        <button className="h-14 md:h-16 w-48 md:w-72 bg-black/40 border border-white/[0.08] border-t-white/[0.2] border-l-white/[0.2] backdrop-blur-xl rounded-full hover:bg-white/[0.05] shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] transition-all duration-300">BUTTON</button>
 
                         {/* Circular Social Buttons */}
                         <button className="w-14 h-14 md:w-16 md:h-16 bg-black/40 border border-white/[0.08] border-t-white/[0.2] border-l-white/[0.2] backdrop-blur-xl rounded-full flex items-center justify-center hover:bg-white/[0.05] shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] transition-all duration-300 text-zinc-400 hover:text-white group">

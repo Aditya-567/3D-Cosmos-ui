@@ -338,7 +338,7 @@ const SaturnLandingPage = () => {
                         {/* Action Buttons Row */}
                         <div className="flex flex-wrap items-center gap-4 mt-4">
                             {/* Main Pill Button */}
-                            <button className="h-12 w-32 bg-black/40 border border-white/[0.08] border-t-white/[0.2] border-l-white/[0.2] backdrop-blur-xl rounded-full hover:bg-white/[0.05] shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] transition-all duration-300">
+                            <button className="h-12 w-32 bg-black/40 border border-white/[0.08] border-t-white/[0.2] border-l-white/[0.2] backdrop-blur-xl rounded-full hover:bg-white/[0.05] shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] transition-all duration-300">BUTTON
                                 {/* Empty space as requested */}
                             </button>
 

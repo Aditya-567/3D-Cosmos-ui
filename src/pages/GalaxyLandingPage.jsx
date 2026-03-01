@@ -147,7 +147,7 @@ const GalaxyLandingPage = () => {
                             Full-stack developer and creative technologist crafting immersive web experiences with React, Three.js, and elegant API ecosystems for ambitious teams.
                         </p>
                         <div className="flex flex-wrap items-center gap-4 mt-4">
-                            <button className="h-12 w-32 bg-black/40 border border-white/[0.08] border-t-white/[0.2] border-l-white/[0.2] backdrop-blur-xl rounded-full hover:bg-white/[0.05] shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] transition-all duration-300"></button>
+                            <button className="h-12 w-32 bg-black/40 border border-white/[0.08] border-t-white/[0.2] border-l-white/[0.2] backdrop-blur-xl rounded-full hover:bg-white/[0.05] shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] transition-all duration-300">BUTTON</button>
                             <button className="w-12 h-12 bg-black/40 border border-white/[0.08] border-t-white/[0.2] border-l-white/[0.2] backdrop-blur-xl rounded-full flex items-center justify-center hover:bg-white/[0.05] shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] transition-all duration-300 text-zinc-400 hover:text-white">
                                 <Github size={20} strokeWidth={1.5} />
                             </button>
