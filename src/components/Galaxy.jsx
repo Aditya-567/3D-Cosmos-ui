@@ -91,6 +91,9 @@ const Galaxy = ({
     starSize = 0.05,
     rotationSpeed = 0.05,
     tilting = { x: 0.9, y: 0 },
+    cameraAngle = 38,
+    cameraDistance = 8,
+    cameraFov = 75,
     enableOptions = true,
     enableStarsBg = true, // Default Points BG
     movingStarsBg = true, // Default Moving
@@ -118,6 +121,9 @@ const Galaxy = ({
         outsideColor: outerColor,
         rotationSpeed: rotationSpeed,
         coreSize: coreSize,
+        cameraAngle: cameraAngle,
+        cameraDistance: cameraDistance,
+        cameraFov: cameraFov,
         bgEnabled: enableStarsBg,
         bgMoving: movingStarsBg,
         bgImageEnabled: enableImageBg // New state
@@ -165,6 +171,9 @@ const Galaxy = ({
             outsideColor: outerColor,
             rotationSpeed: rotationSpeed,
             coreSize: coreSize,
+            cameraAngle: cameraAngle,
+            cameraDistance: cameraDistance,
+            cameraFov: cameraFov,
             bgEnabled: enableStarsBg,
             bgMoving: movingStarsBg,
             bgImageEnabled: enableImageBg
@@ -172,11 +181,14 @@ const Galaxy = ({
         if (tilting) {
             rotation.current = { ...tilting };
         }
+        // Sync cameraAngle prop → rotation theta (90°=flat/top-down, 0°=edge-on)
+        rotation.current.x = (90 - cameraAngle) * Math.PI / 180;
 
     }, [
         stars, radius, arms, coreSize, spinCurvature, randomness,
         innerColor, outerColor, starSize, rotationSpeed, tilting?.x, tilting?.y,
-        enableOptions, enableStarsBg, movingStarsBg, enableImageBg
+        enableOptions, enableStarsBg, movingStarsBg, enableImageBg,
+        cameraAngle, cameraDistance, cameraFov
     ]);
 
     // Mouse interaction
@@ -242,16 +254,21 @@ const Galaxy = ({
                 }
             }
 
-            const r = 8;
+            const r = currentParams.cameraDistance;
             const theta = rotation.current.x;
             const phi = rotation.current.y;
 
-            const constrainedTheta = Math.max(0.1, Math.min(Math.PI / 2 - 0.1, theta));
+            const constrainedTheta = Math.max(0.001, Math.min(Math.PI / 2 - 0.01, theta));
 
             camera.position.x = r * Math.sin(constrainedTheta) * Math.sin(phi);
             camera.position.y = r * Math.cos(constrainedTheta);
             camera.position.z = r * Math.sin(constrainedTheta) * Math.cos(phi);
             camera.lookAt(0, 0, 0);
+
+            if (camera.fov !== currentParams.cameraFov) {
+                camera.fov = currentParams.cameraFov;
+                camera.updateProjectionMatrix();
+            }
 
             renderer.render(scene, camera);
             frameIdRef.current = requestAnimationFrame(animate);
@@ -718,6 +735,41 @@ const Galaxy = ({
                                         type="range" min="0.01" max="0.5" step="0.01"
                                         value={parameters.size}
                                         onChange={(e) => updateParam('size', parseFloat(e.target.value))}
+                                        className="w-full"
+                                    />
+                                </ControlCard>
+
+                                <ControlCard label="Camera Angle" value={parameters.cameraAngle}>
+                                    <div className="flex justify-between text-[10px] text-white/30 font-mono mb-1">
+                                        <span>Edge-on (0°)</span>
+                                        <span>Flat (90°)</span>
+                                    </div>
+                                    <input
+                                        type="range" min="0" max="90" step="1"
+                                        value={parameters.cameraAngle}
+                                        onChange={(e) => {
+                                            const val = parseInt(e.target.value);
+                                            updateParam('cameraAngle', val);
+                                            rotation.current.x = (90 - val) * Math.PI / 180;
+                                        }}
+                                        className="w-full"
+                                    />
+                                </ControlCard>
+
+                                <ControlCard label="Camera Distance" value={parameters.cameraDistance}>
+                                    <input
+                                        type="range" min="2" max="40" step="0.5"
+                                        value={parameters.cameraDistance}
+                                        onChange={(e) => updateParam('cameraDistance', parseFloat(e.target.value))}
+                                        className="w-full"
+                                    />
+                                </ControlCard>
+
+                                <ControlCard label="Camera FOV" value={parameters.cameraFov}>
+                                    <input
+                                        type="range" min="20" max="120" step="1"
+                                        value={parameters.cameraFov}
+                                        onChange={(e) => updateParam('cameraFov', parseInt(e.target.value))}
                                         className="w-full"
                                     />
                                 </ControlCard>

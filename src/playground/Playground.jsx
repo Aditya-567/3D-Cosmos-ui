@@ -17,26 +17,20 @@ import Editor from "@monaco-editor/react";
 /*  IMPORT COMPONENTS                                                         */
 /* -------------------------------------------------------------------------- */
 
-import DotGlobe from "../components/DotGlobe";
-import DotGlobeWithDataLink from "../components/DotGlobeWithDataLink";
 import EarthAndMoon from "../components/EarthAndMoon";
 import EarthAndSatellite from "../components/EarthAndSatellite";
 import EarthMoonSatellite from "../components/EarthMoonSatellite";
 import EarthWithTower from "../components/EarthWithTower";
 import Galaxy from "../components/Galaxy";
 import SolarSystem from "../components/SolarSystem";
-import SolarSystemWithFeatures from "../components/SolarSystemWithFeatures";
 
 const COMPONENT_MAP = {
   Galaxy,
-  DotGlobe,
-  DotGlobeWithDataLink,
   EarthAndSatellite,
   EarthWithTower,
   EarthAndMoon,
   EarthMoonSatellite,
-  SolarSystem,
-  SolarSystemWithFeatures
+  SolarSystem
 };
 
 /* -------------------------------------------------------------------------- */
@@ -70,16 +64,6 @@ export default function App() {
     style={{}}
 />;
 }`,
-  DotGlobe: `import { DotGlobe } from "./components/DotGlobe";
-
-export default function App() {
-  return <DotGlobe />;
-}`,
-  DotGlobeWithDataLink: `import { DotGlobeWithDataLink } from "./components/DotGlobeWithDataLink";
-
-export default function App() {
-  return <DotGlobeWithDataLink />;
-}`,
   EarthAndSatellite: `import { EarthAndSatellite } from "./components/EarthAndSatellite";
 
 export default function App() {
@@ -104,11 +88,6 @@ export default function App() {
 
 export default function App() {
   return <SolarSystem speed={1} />;
-}`,
-  SolarSystemWithFeatures: `import { SolarSystemWithFeatures } from "./components/SolarSystemWithFeatures";
-
-export default function App() {
-  return <SolarSystemWithFeatures />;
 }`
 };
 
@@ -130,12 +109,6 @@ const COMPONENT_ATTRIBUTES = {
     { name: "rotationSpeed", type: "number", default: "0.05", description: "Galaxy rotation speed" },
     { name: "enableOptions", type: "boolean", default: "true", description: "Show control options" },
     { name: "enableStarsBg", type: "boolean", default: "true", description: "Show background stars" }
-  ],
-  DotGlobe: [
-    { name: "Custom", type: "text", default: "N/A", description: "No additional parameters" }
-  ],
-  DotGlobeWithDataLink: [
-    { name: "Custom", type: "text", default: "N/A", description: "No additional parameters" }
   ],
   EarthAndMoon: [
     { name: "earthSize", type: "number", default: "0.6", description: "Earth radius" },
@@ -194,9 +167,6 @@ const COMPONENT_ATTRIBUTES = {
     { name: "initialDistance", type: "number", default: "280", description: "Initial camera distance" },
     { name: "autoRotate", type: "boolean", default: "true", description: "Enable scene rotation" }
   ],
-  SolarSystemWithFeatures: [
-    { name: "Custom", type: "text", default: "N/A", description: "See component documentation" }
-  ]
 };
 
 /* -------------------------------------------------------------------------- */
