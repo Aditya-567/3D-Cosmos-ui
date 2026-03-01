@@ -129,7 +129,7 @@ const SaturnLandingPage = () => {
                         ringWidth={0.6}
                         ringParticleCount={200000}
                         ringInnerRadius={0.75}
-                        mouseInteractive={!isMobile}
+                        mouseInteractive={false}
                     />
                 </div>
             </div>
@@ -316,7 +316,7 @@ const SaturnLandingPage = () => {
                         ringWidth={0.6}
                         ringParticleCount={200000}
                         ringInnerRadius={0.75}
-                        mouseInteractive={!isMobile}
+                        mouseInteractive={false}
                     />
                 </div>
             </div>
