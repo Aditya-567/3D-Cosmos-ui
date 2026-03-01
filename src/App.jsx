@@ -27,7 +27,7 @@ import {
   SolarSystemWithFeatures, Uranus,
   Venus
 } from '3d-solar-system-globe';
-import Contact from './components/contact';
+import Contact from './components/Contact';
 import EarthAndMoon from './components/EarthAndMoon';
 import EarthAndSatellite from './components/EarthAndSatellite';
 import EarthMoonSatellite from './components/EarthMoonSatellite';
