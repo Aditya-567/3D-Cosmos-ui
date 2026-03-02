@@ -91,7 +91,7 @@ export default function Contact() {
     const [formOpen, setFormOpen] = useState(false);
 
     const socials = [
-        { icon: Github, label: 'GitHub', href: '#' },
+        { icon: Github, label: 'GitHub', href: 'https://github.com/Aditya-567/3D-Planets' },
         { icon: Twitter, label: 'Twitter', href: '#' },
         { icon: Youtube, label: 'YouTube', href: '#' },
     ];

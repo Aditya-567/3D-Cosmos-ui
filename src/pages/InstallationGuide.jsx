@@ -7,6 +7,7 @@ import {
     Code2,
     Copy,
     ExternalLink,
+    Github,
     Globe,
     Layers,
     Layout,
@@ -788,7 +789,14 @@ export default function InstallationGuide() {
                         target="_blank" rel="noopener noreferrer"
                         className="flex items-center gap-1.5 px-5 py-2.5 rounded-lg border border-[#e5e5e5] text-[#666] hover:text-[#1a1a1a] hover:border-orange-400 hover:bg-orange-50 font-black uppercase italic text-xs transition-all duration-200"
                     >
-                        <Package size={13} /> npm
+                        <Package size={13} /> npm package
+                    </a>
+                    <a
+                        href="https://github.com/Aditya-567/3D-Planets"
+                        target="_blank" rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 px-5 py-2.5 rounded-lg border border-[#e5e5e5] text-[#666] hover:text-[#1a1a1a] hover:border-orange-400 hover:bg-orange-50 font-black uppercase italic text-xs transition-all duration-200"
+                    >
+                        <Github size={13} /> GitHub
                     </a>
                     <button
                         onClick={() => navigate('/playground')}
